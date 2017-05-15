@@ -1,3 +1,5 @@
+
+
 'use strict';
 
 function Article (rawDataObj) {
@@ -50,9 +52,10 @@ Article.fetchAll = function() {
     // When rawData is already in localStorage,
     // we can load it with the .loadAll function above,
     // and then render the index page (using the proper method on the articleView object).
-    Article.loadAll(localStorage.rawData); //TODO: What do we pass in to loadAll()?
+    Article.loadAll(JSON.parse(localStorage.rawData)); //TODO: What do we pass in to loadAll()?
     //TODO: What method do we call to render the index page?
-    articleView.toHtml();
+    articleView.initIndexPage();
+    console.log('inside the if', articleView);
 
   } else {
     // TODO: When we don't already have the rawData,
@@ -64,16 +67,14 @@ Article.fetchAll = function() {
     .then(
       function(data) {
         console.log(data);
-        data.forEach(function(articleObject) {
-          Article.all.push(new Article(articleObject));
-          console.log('article array being built', Article.all);
-        });
-        Article.all.forEach(function(articleObject) {
-          $('#article-template').append(articleObject.toHtml());
-        });
+        Article.loadAll(data);
+        localStorage.rawData = JSON.stringify(data);
+        articleView.initIndexPage();
       },
-    function(err) {
-      console.log('err');
-    })
+
+      function(err) {
+        console.log('err');
+      });s
+
+    }
   }
-}
